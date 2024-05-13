@@ -34,12 +34,12 @@ public class ContactsManager {
         }
     }
 
-    public List<Contact> getContacts() throws SQLException {
-        ResultSet rs = _statement.executeQuery("SELECT * FROM Contacts");
-        List<Contact> contacts = new ArrayList();
-        Contact c;
+    public List<ContactBasic> getContacts() throws SQLException {
+        ResultSet rs = _statement.executeQuery("SELECT * FROM Contacts ORDER BY (Contacts.firstName || ' ' || Contacts.lastName)");
+        List<ContactBasic> contacts = new ArrayList();
+        ContactBasic c;
         while (rs.next()) {
-            c = new Contact();
+            c = new ContactBasic();
             c.id = rs.getInt("id");
             c.firstName = rs.getString("firstName");
             c.lastName = rs.getString("lastName");
@@ -111,6 +111,30 @@ public class ContactsManager {
     
     public void deleteContact(int id) throws SQLException {
         _statement.executeQuery("BEGIN;DELETE FROM PhoneNumbers WHERE PhoneNumbers.contact_id="+id+";DELETE FROM emails WHERE emails.contact_id="+id+";DELETE FROM Contacts WHERE Contacts.id=" + id + ";COMMIT;");
+    }
+    
+    private String getSearchRegexTerm(String input) {
+        String s = "";
+        for(int i = 0;i < input.length();i++) {
+            s += input.charAt(i) + ".*";
+        }
+        return s;
+    }
+    
+    public List<ContactBasic> searchContact(String term) throws SQLException {
+        String rterm = getSearchRegexTerm(term);
+        ResultSet rs = _statement.executeQuery("SELECT Contacts.* FROM Contacts LEFT JOIN PhoneNumbers ON PhoneNumbers.contact_id = Contacts.id LEFT JOIN emails ON emails.contact_id = Contacts.id WHERE (Contacts.firstName || ' ' || Contacts.lastName) LIKE '%"+rterm+"%' OR CAST(PhoneNumbers.phoneNumber AS TEXT) LIKE '%"+rterm+"%' OR emails.email LIKE '%"+rterm+"%' GROUP BY Contacts.id ORDER BY (Contacts.firstName || ' ' || Contacts.lastName);");
+        List<ContactBasic> contacts = new ArrayList();
+        ContactBasic c;
+        while (rs.next()) {
+            c = new ContactBasic();
+            c.id = rs.getInt("id");
+            c.firstName = rs.getString("firstName");
+            c.lastName = rs.getString("lastName");
+            c.jobTitle = rs.getString("jobTitle");
+            contacts.add(c);
+        }
+        return contacts;
     }
     
     private void initDatabase() throws SQLException {
