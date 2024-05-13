@@ -1,0 +1,2 @@
+com\ProGeeks\ContactsManager\Model\PhoneNumber\InvalidPhoneNumberException.class
+com\ProGeeks\ContactsManager\Model\Email\InvalidEmailAddressException.class
