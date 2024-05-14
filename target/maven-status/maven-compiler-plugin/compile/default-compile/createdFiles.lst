@@ -1,2 +1,7 @@
+com\ProGeeks\ContactsManager\GUI\AddContact$8.class
+com\ProGeeks\ContactsManager\Data\LevenshteinDistanceSQLite.class
 com\ProGeeks\ContactsManager\Model\PhoneNumber\InvalidPhoneNumberException.class
+com\ProGeeks\ContactsManager\GUI\MainContactsList$7.class
+com\ProGeeks\ContactsManager\Data\LevenshteinDistance.class
+com\ProGeeks\ContactsManager\Data\ContactsManager$1.class
 com\ProGeeks\ContactsManager\Model\Email\InvalidEmailAddressException.class

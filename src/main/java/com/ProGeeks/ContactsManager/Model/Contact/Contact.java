@@ -17,4 +17,14 @@ public class Contact extends ContactBasic{
 		this.emails = new ArrayList();
 		this.phoneNumbers = new ArrayList();
 	}
+        
+        @Override
+        public String toString() {
+            String s = "{"+super.toString() + ",\n[";
+            for(int i=0;i<this.phoneNumbers.size();i++) s+= phoneNumbers.get(i).toString();
+            s+= "],\n[";
+            for(int i=0;i<this.emails.size();i++) s+= emails.get(i).toString();
+            s += "]}";
+            return s;
+        }
 } 

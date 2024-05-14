@@ -6,4 +6,9 @@ public class ContactBasic {
     public String lastName = "";
     public String jobTitle = "";
     
+    @Override
+    public String toString() {
+        return "[id:"+id+",fn:"+firstName+",ln:"+lastName+",jt:"+jobTitle+"]";
+    }
+    
 }

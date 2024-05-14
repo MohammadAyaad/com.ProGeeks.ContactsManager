@@ -16,6 +16,8 @@ import com.ProGeeks.ContactsManager.Model.Email.Email;
 import com.ProGeeks.ContactsManager.Model.Email.InvalidEmailAddressException;
 import com.ProGeeks.ContactsManager.Model.PhoneNumber.InvalidPhoneNumberException;
 import com.ProGeeks.ContactsManager.Model.PhoneNumber.PhoneNumber;
+import java.util.regex.Pattern;
+import org.sqlite.Function;
 
 public class ContactsManager {
 
@@ -26,9 +28,26 @@ public class ContactsManager {
 
         try {
             _connection = DriverManager.getConnection("jdbc:sqlite:contacts.db");
+            
+            Function.create(_connection, "REGEXP", new Function() {
+            @Override
+            protected void xFunc() throws SQLException {
+                String expression = value_text(0);
+                String value = value_text(1);
+                if (value == null) value = "";
+                Pattern pattern = Pattern.compile(expression);
+                result(pattern.matcher(value).find() ? 1 : 0);
+            }
+        });
+            Function.create(_connection, "EDITD", new LevenshteinDistanceSQLite());
+            
             _statement = _connection.createStatement();
             _statement.setQueryTimeout(30);
-            if(!isDatabaseInit()) initDatabase();
+            if(!isDatabaseInit())
+            {
+                System.out.println("Initializing DataBase");
+                initDatabase();
+            }
         } catch (SQLException e) {
             e.printStackTrace(System.err);
         }
@@ -70,23 +89,27 @@ public class ContactsManager {
     }
     
     public void addContact(Contact c) throws SQLException {
-        String qry= "BEGIN;INSERT INTO Contacts(firstName,lastName,jobTitle) VALUES('"+c.firstName+"','"+c.lastName+"','"+c.jobTitle+"');SELECT last_insert_rowid() INTO @last_id;";
+        _statement.executeUpdate("BEGIN;INSERT INTO Contacts(firstName,lastName,jobTitle) VALUES('"+c.firstName+"','"+c.lastName+"','"+c.jobTitle+"');");
+        ResultSet rs = _statement.executeQuery("SELECT last_insert_rowid();");
+        int lastId = rs.getInt(1);
+        String qry = "";
         if(c.phoneNumbers.size() != 0) {
             qry += "INSERT INTO PhoneNumbers(contact_id,phoneNumber) VALUES";
             for(int i = 0;i < c.phoneNumbers.size();i++) {
-                qry += "(@last_id," + c.phoneNumbers.get(i).get() + ")";
+                qry += "("+lastId+"," + c.phoneNumbers.get(i).get() + ")"+ ((!((i+1) < c.phoneNumbers.size()))?"":",");
             }
             qry += ";";
         }
         if(c.emails.size() != 0) {
             qry += "INSERT INTO emails(contact_id,email) VALUES";
             for(int i = 0;i < c.emails.size();i++) {
-                qry += "(@last_id,'" + c.emails.get(i)+ "')";
+                qry += "("+lastId+",'" + c.emails.get(i)+ "')"+ ((!((i+1) < c.emails.size()))?"":",");
             }
             qry += ";";
         }
         qry += "COMMIT;";
-        _statement.executeQuery(qry);
+        System.out.println(qry);
+        _statement.executeUpdate(qry);
     }
     
     public void updateContactDetails(Contact c) throws SQLException {
@@ -94,23 +117,24 @@ public class ContactsManager {
         if(c.phoneNumbers.size() != 0) {
             qry += "INSERT INTO PhoneNumbers(contact_id,phoneNumber) VALUES";
             for(int i = 0;i < c.phoneNumbers.size();i++) {
-                qry += "(" + c.id + "," + c.phoneNumbers.get(i).get() + ")";
+                qry += "(" + c.id + "," + c.phoneNumbers.get(i).get() + ")" + ((!((i+1) < c.phoneNumbers.size()))?"":",");
             }
             qry += ";";
         }
         if(c.emails.size() != 0) {
             qry += "INSERT INTO emails(contact_id,email) VALUES";
             for(int i = 0;i < c.emails.size();i++) {
-                qry += "(" + c.id + ",'" + c.emails.get(i)+ "')";
+                qry += "(" + c.id + ",'" + c.emails.get(i)+ "')"+ ((!((i+1) < c.emails.size()))?"":",");
             }
             qry += ";";
         }
         qry += "COMMIT;";
-        _statement.executeQuery(qry);
+        System.out.println(qry);
+        _statement.executeUpdate(qry);
     }
     
     public void deleteContact(int id) throws SQLException {
-        _statement.executeQuery("BEGIN;DELETE FROM PhoneNumbers WHERE PhoneNumbers.contact_id="+id+";DELETE FROM emails WHERE emails.contact_id="+id+";DELETE FROM Contacts WHERE Contacts.id=" + id + ";COMMIT;");
+        _statement.executeUpdate("BEGIN;DELETE FROM PhoneNumbers WHERE PhoneNumbers.contact_id="+id+";DELETE FROM emails WHERE emails.contact_id="+id+";DELETE FROM Contacts WHERE Contacts.id=" + id + ";COMMIT;");
     }
     
     private String getSearchRegexTerm(String input) {
@@ -122,8 +146,8 @@ public class ContactsManager {
     }
     
     public List<ContactBasic> searchContact(String term) throws SQLException {
-        String rterm = getSearchRegexTerm(term);
-        ResultSet rs = _statement.executeQuery("SELECT Contacts.* FROM Contacts LEFT JOIN PhoneNumbers ON PhoneNumbers.contact_id = Contacts.id LEFT JOIN emails ON emails.contact_id = Contacts.id WHERE (Contacts.firstName || ' ' || Contacts.lastName) LIKE '%"+rterm+"%' OR CAST(PhoneNumbers.phoneNumber AS TEXT) LIKE '%"+rterm+"%' OR emails.email LIKE '%"+rterm+"%' GROUP BY Contacts.id ORDER BY (Contacts.firstName || ' ' || Contacts.lastName);");
+        String rterm = term;
+        ResultSet rs = _statement.executeQuery("SELECT Contacts.*,(EDITD((Contacts.firstName || ' ' || Contacts.lastName),'"+rterm+"') + EDITD(CAST(PhoneNumbers.phoneNumber AS TEXT),'"+rterm+"') + EDITD(emails.email,'"+rterm+"')) AS distance FROM Contacts LEFT JOIN PhoneNumbers ON PhoneNumbers.contact_id = Contacts.id LEFT JOIN emails ON emails.contact_id = Contacts.id GROUP BY Contacts.id ORDER BY distance ASC;");
         List<ContactBasic> contacts = new ArrayList();
         ContactBasic c;
         while (rs.next()) {
@@ -165,17 +189,21 @@ public class ContactsManager {
                 + ");";
         _statement.executeUpdate("BEGIN;\r\n" + contactsTable + "\r\n" + phoneNumbersTable + "\r\n" + emailsTable + "\r\nCOMMIT;");
     }
+    
+    public void clearDatabase() throws SQLException {
+        _statement.executeUpdate("DELETE FROM Contacts;DELETE FROM PhoneNumbers;DELETE FROM emails");
+    }
 
     private boolean isDatabaseInit() {
         Map<String, Boolean> InitMap = new HashMap();
-        InitMap.put("contacts", false);
-        InitMap.put("phonenumbers", false);
+        InitMap.put("Contacts", false);
+        InitMap.put("PhoneNumbers", false);
         InitMap.put("emails", false);
         boolean allinit = true;
         try {
             ResultSet rs = _statement.executeQuery("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%';");
             while (rs.next()) {
-                InitMap.put(rs.getString(0), true);
+                InitMap.put(rs.getString(1), true);
             }
             for (int i = 0; i < InitMap.size(); i++) {
                 allinit &= InitMap.get(InitMap.keySet().toArray()[i]);

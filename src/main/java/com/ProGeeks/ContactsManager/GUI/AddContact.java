@@ -4,7 +4,16 @@
  */
 package com.ProGeeks.ContactsManager.GUI;
 
+import com.ProGeeks.ContactsManager.MainClass;
+import com.ProGeeks.ContactsManager.Model.Contact.Contact;
+import com.ProGeeks.ContactsManager.Model.Email.Email;
+import com.ProGeeks.ContactsManager.Model.Email.InvalidEmailAddressException;
+import com.ProGeeks.ContactsManager.Model.PhoneNumber.InvalidPhoneNumberException;
+import com.ProGeeks.ContactsManager.Model.PhoneNumber.PhoneNumber;
 import java.awt.event.KeyEvent;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -43,8 +52,6 @@ public class AddContact extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         mobileNumBar1 = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
         jLabel1.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Add Contact");
@@ -67,6 +74,12 @@ public class AddContact extends javax.swing.JFrame {
         discardButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 discardButtonActionPerformed(evt);
+            }
+        });
+
+        firstnameBar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                firstnameBarActionPerformed(evt);
             }
         });
 
@@ -129,20 +142,20 @@ public class AddContact extends javax.swing.JFrame {
                             .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(firstnameBar, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
-                            .addComponent(lastnameBar)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(emailBar)
-                            .addComponent(jobBar)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(mobileNumBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(mobileNumBar)))))
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(65, 65, 65)
+                                .addComponent(mobileNumBar, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE))
+                            .addComponent(lastnameBar)
+                            .addComponent(firstnameBar)
+                            .addComponent(jobBar))))
+                .addGap(6, 6, 6))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(83, Short.MAX_VALUE)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(153, Short.MAX_VALUE))
+                .addGap(75, 75, 75))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -182,7 +195,8 @@ public class AddContact extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void discardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_discardButtonActionPerformed
-        // TODO add your handling code here:
+        this.dispose();
+       // TODO add your handling code here:
     }//GEN-LAST:event_discardButtonActionPerformed
 
     private void mobileNumBarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mobileNumBarActionPerformed
@@ -219,8 +233,28 @@ public class AddContact extends javax.swing.JFrame {
     }//GEN-LAST:event_mobileNumBar1KeyPressed
 
     private void saveingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveingButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            Contact c = new Contact();
+            c.firstName = firstnameBar.getText();
+            c.lastName = lastnameBar.getText();
+            c.jobTitle = jobBar.getText();
+            c.phoneNumbers.add(new PhoneNumber(mobileNumBar.getText()));
+            MainClass.manager.addContact(c);
+            // TODO add your handling code here:
+            c.emails.add(new Email(emailBar.getText()));
+        } catch (InvalidPhoneNumberException ex) {
+            Logger.getLogger(AddContact.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidEmailAddressException ex) {
+            Logger.getLogger(AddContact.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(AddContact.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }//GEN-LAST:event_saveingButtonActionPerformed
+
+    private void firstnameBarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_firstnameBarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_firstnameBarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton discardButton;

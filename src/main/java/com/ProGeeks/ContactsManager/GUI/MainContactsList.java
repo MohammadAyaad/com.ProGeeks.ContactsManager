@@ -5,6 +5,12 @@
 package com.ProGeeks.ContactsManager.GUI;
 
 import com.ProGeeks.ContactsManager.MainClass;
+import com.ProGeeks.ContactsManager.Model.Contact.ContactBasic;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 /**
  *
@@ -78,7 +84,6 @@ public class MainContactsList extends javax.swing.JFrame {
         menu.setFocusable(false);
 
         addContact1.setBackground(new java.awt.Color(115, 115, 115));
-        addContact1.setForeground(new java.awt.Color(0, 0, 0));
         addContact1.setText("Add Contact");
         addContact1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -87,7 +92,6 @@ public class MainContactsList extends javax.swing.JFrame {
         });
 
         searchbar1.setBackground(new java.awt.Color(204, 204, 204));
-        searchbar1.setForeground(new java.awt.Color(0, 0, 0));
         searchbar1.addAncestorListener(new javax.swing.event.AncestorListener() {
             public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
                 searchbar1AncestorAdded(evt);
@@ -115,7 +119,6 @@ public class MainContactsList extends javax.swing.JFrame {
 
         printContacts1.setBackground(new java.awt.Color(200, 200, 200));
         printContacts1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        printContacts1.setForeground(new java.awt.Color(0, 0, 0));
         printContacts1.setText("Print");
         printContacts1.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         printContacts1.addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -143,10 +146,10 @@ public class MainContactsList extends javax.swing.JFrame {
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(printContacts1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(searchLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(searchLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(printContacts1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(searchbar1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -198,12 +201,16 @@ public class MainContactsList extends javax.swing.JFrame {
     private void searchbar1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchbar1KeyReleased
 // Event > key released
     String search = searchbar1.getText().trim();
+        try {
+          List <ContactBasic> c = MainClass.manager.searchContact(search);
+        } catch (SQLException ex) {
+            Logger.getLogger(MainContactsList.class.getName()).log(Level.SEVERE, null, ex);
+        }
     if (!search.equals("")){
     System.out.println(search);
     } 
-    menu.show(searchbar1,0,searchbar1.getHeight());        
+    menu.show(searchbar1,0,searchbar1.getHeight());  
     }//GEN-LAST:event_searchbar1KeyReleased
-
     private void searchbar1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchbar1KeyTyped
         // TODO add your handling code here:
     }//GEN-LAST:event_searchbar1KeyTyped
