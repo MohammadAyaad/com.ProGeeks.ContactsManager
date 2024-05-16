@@ -4,6 +4,13 @@
  */
 package com.ProGeeks.ContactsManager.GUI;
 
+import com.ProGeeks.ContactsManager.MainClass;
+import static com.ProGeeks.ContactsManager.MainClass.pContactList;
+import com.ProGeeks.ContactsManager.Model.Contact.ContactBasic;
+import java.awt.Color;
+import java.sql.SQLException;
+import java.util.List;
+
 /**
  *
  * @author Hady Elkatatny
@@ -13,8 +20,20 @@ public class ContactsList extends javax.swing.JFrame {
     /**
      * Creates new form 
      */
-    public ContactsList() {
+    public ContactsList() throws SQLException {
         initComponents();
+        List<ContactBasic> contacts = MainClass.manager.getContacts();
+        for(ContactBasic c : contacts) {
+            javax.swing.JTextArea t = new javax.swing.JTextArea();
+            String display = c.firstName + " " + c.lastName;
+            t.setText(display);
+            jList1.add(t);
+            System.out.println("Added '" + display + "'");
+        }
+        
+                
+                
+        
     }
 
     /**
@@ -34,6 +53,15 @@ public class ContactsList extends javax.swing.JFrame {
 
         setMaximumSize(new java.awt.Dimension(250, 250));
 
+        jList1.addAncestorListener(new javax.swing.event.AncestorListener() {
+            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
+                jList1AncestorAdded(evt);
+            }
+            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
+            }
+            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
+            }
+        });
         jScrollPane1.setViewportView(jList1);
 
         deletebutton.setBackground(new java.awt.Color(255, 0, 0));
@@ -44,6 +72,11 @@ public class ContactsList extends javax.swing.JFrame {
         updatabutton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         updatabutton.setForeground(new java.awt.Color(255, 255, 255));
         updatabutton.setText("Update");
+        updatabutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                updatabuttonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
         panel.setLayout(panelLayout);
@@ -89,6 +122,21 @@ public class ContactsList extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jList1AncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_jList1AncestorAdded
+ 
+        
+      
+         
+    
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jList1AncestorAdded
+
+    private void updatabuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updatabuttonActionPerformed
+    
+        
+        // TODO add your handling code here:
+    }//GEN-LAST:event_updatabuttonActionPerformed
 
     /**
      * @param args the command line arguments
