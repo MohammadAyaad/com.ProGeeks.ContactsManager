@@ -2,12 +2,10 @@ package com.ProGeeks.ContactsManager;
 
 import com.ProGeeks.ContactsManager.Data.ContactsManager;
 import com.ProGeeks.ContactsManager.GUI.*;
-import com.ProGeeks.ContactsManager.Model.Contact.Contact;
-import com.ProGeeks.ContactsManager.Model.Contact.ContactBasic;
-import com.ProGeeks.ContactsManager.Model.Email.Email;
-import com.ProGeeks.ContactsManager.Model.Email.InvalidEmailAddressException;
-import com.ProGeeks.ContactsManager.Model.PhoneNumber.InvalidPhoneNumberException;
-import com.ProGeeks.ContactsManager.Model.PhoneNumber.PhoneNumber;
+import com.ProGeeks.ContactsManager.Model.Contact.*;
+import com.ProGeeks.ContactsManager.Model.Email.*;
+import com.ProGeeks.ContactsManager.Model.PhoneNumber.*;
+import com.ProGeeks.ContactsManager.Data.LevenshteinDistance;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -58,7 +56,6 @@ public class MainClass {
         
     }
     
-    
     public static void test(ContactsManager m) throws SQLException, InvalidPhoneNumberException, InvalidEmailAddressException {
         System.out.println("Contacts List : ");
         pContactList(m.getContacts());
@@ -94,7 +91,7 @@ public class MainClass {
         System.out.println("Contacts List : ");
         pContactList(m.getContacts());
         
-        String term = "Hady";
+        String term = "most";
         System.out.println("===================SEARCH '" + term +"' ====================");
         System.out.println(m.searchContact(term));
         

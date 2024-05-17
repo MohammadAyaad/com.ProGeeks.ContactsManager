@@ -11,42 +11,20 @@ import java.util.Arrays;
  * @author Hady Elkatatny
  */
 public class LevenshteinDistance {
-    public static int ComputeDistance(String str1,String str2)
-    {
-        int[][] dp = new int[str1.length() + 1][str2.length() + 1];
-        for (int i = 0; i <= str1.length(); i++) 
-        {
-            for (int j = 0; j <= str2.length(); j++) {
-                if (i == 0) {
-                    dp[i][j] = j;
-                }
-                else if (j == 0) {
-                    dp[i][j] = i;
-                }
-                else {
-                    dp[i][j] = minm_edits(dp[i - 1][j - 1]
-                        + NumOfReplacement(str1.charAt(i - 1),str2.charAt(j - 1)), // replace
-                        dp[i - 1][j] + 1, // delete
-                        dp[i][j - 1] + 1); // insert
-                }
+    public static int ComputeDistance(String str0, String str1) {
+        int[][] distance_matrix = new int[(str0.length() + 1)][(str1.length() + 1)];
+        for (int i = 0; i <= str0.length(); i++)
+            distance_matrix[i][0] = i;
+        for (int i = 0; i <= str1.length(); i++)
+            distance_matrix[0][i] = i;
+
+        for (int x = 1; x <= str0.length(); x++) {
+            for (int y = 1; y <= str1.length(); y++) {
+                distance_matrix[x][y] = Math.min(distance_matrix[x - 1][y],
+                        Math.min(distance_matrix[x][y - 1], distance_matrix[x - 1][y - 1]))
+                        + ((str0.charAt(x - 1) == str1.charAt(y - 1)) ? 0 : 1);
             }
         }
- 
-        return dp[str1.length()][str2.length()];
-    }
-   
-    private static int NumOfReplacement(char c1, char c2)
-    {
-        return c1 == c2 ? 0 : 1;
-    }
- 
-    // receives the count of different
-    // operations performed and returns the
-    // minimum value among them.
-   
-    static int minm_edits(int... nums)
-    {
-        return Arrays.stream(nums).min().orElse(
-            Integer.MAX_VALUE);
+        return distance_matrix[(str0.length())][(str1.length())];
     }
 }

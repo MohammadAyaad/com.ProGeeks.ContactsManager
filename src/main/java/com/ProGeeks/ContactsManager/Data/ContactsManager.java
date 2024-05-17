@@ -147,7 +147,7 @@ public class ContactsManager {
     
     public List<ContactBasic> searchContact(String term) throws SQLException {
         String rterm = term;
-        ResultSet rs = _statement.executeQuery("SELECT Contacts.*,(EDITD((Contacts.firstName || ' ' || Contacts.lastName),'"+rterm+"') + EDITD(CAST(PhoneNumbers.phoneNumber AS TEXT),'"+rterm+"') + EDITD(emails.email,'"+rterm+"')) AS distance FROM Contacts LEFT JOIN PhoneNumbers ON PhoneNumbers.contact_id = Contacts.id LEFT JOIN emails ON emails.contact_id = Contacts.id GROUP BY Contacts.id ORDER BY distance ASC;");
+        ResultSet rs = _statement.executeQuery("SELECT Contacts.*,MIN(EDITD((Contacts.firstName || ' ' || Contacts.lastName),'"+rterm+"'),EDITD(CAST(PhoneNumbers.phoneNumber AS TEXT),'"+rterm+"'),EDITD(emails.email,'"+rterm+"')) AS distance FROM Contacts LEFT JOIN PhoneNumbers ON PhoneNumbers.contact_id = Contacts.id LEFT JOIN emails ON emails.contact_id = Contacts.id GROUP BY Contacts.id ORDER BY distance ASC;");
         List<ContactBasic> contacts = new ArrayList();
         ContactBasic c;
         while (rs.next()) {
