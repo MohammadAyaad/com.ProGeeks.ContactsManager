@@ -240,9 +240,10 @@ public class AddContact extends javax.swing.JFrame {
             c.lastName = lastnameBar.getText();
             c.jobTitle = jobBar.getText();
             c.phoneNumbers.add(new PhoneNumber(mobileNumBar.getText()));
-            MainClass.manager.addContact(c);
-            // TODO add your handling code here:
             c.emails.add(new Email(emailBar.getText()));
+            MainClass.manager.addContact(c);
+            System.out.println("CONTACT ADDED!");
+            // TODO add your handling code here:
         } catch (InvalidPhoneNumberException ex) {
             Logger.getLogger(AddContact.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvalidEmailAddressException ex) {
