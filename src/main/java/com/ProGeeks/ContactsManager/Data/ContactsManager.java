@@ -54,7 +54,7 @@ public class ContactsManager {
     }
 
     public List<ContactBasic> getContacts() throws SQLException {
-        ResultSet rs = _statement.executeQuery("SELECT * FROM Contacts ORDER BY (Contacts.firstName || ' ' || Contacts.lastName)");
+        ResultSet rs = _statement.executeQuery("SELECT * FROM Contacts ORDER BY (Contacts.firstName || ' ' || Contacts.lastName) DESC");
         List<ContactBasic> contacts = new ArrayList();
         ContactBasic c;
         while (rs.next()) {
@@ -137,17 +137,12 @@ public class ContactsManager {
         _statement.executeUpdate("BEGIN;DELETE FROM PhoneNumbers WHERE PhoneNumbers.contact_id="+id+";DELETE FROM emails WHERE emails.contact_id="+id+";DELETE FROM Contacts WHERE Contacts.id=" + id + ";COMMIT;");
     }
     
-    private String getSearchRegexTerm(String input) {
-        String s = "";
-        for(int i = 0;i < input.length();i++) {
-            s += input.charAt(i) + ".*";
-        }
-        return s;
-    }
-    
     public List<ContactBasic> searchContact(String term) throws SQLException {
         String rterm = term;
-        ResultSet rs = _statement.executeQuery("SELECT Contacts.*,MIN(EDITD((Contacts.firstName || ' ' || Contacts.lastName),'"+rterm+"'),EDITD(CAST(PhoneNumbers.phoneNumber AS TEXT),'"+rterm+"'),EDITD(emails.email,'"+rterm+"')) AS distance FROM Contacts LEFT JOIN PhoneNumbers ON PhoneNumbers.contact_id = Contacts.id LEFT JOIN emails ON emails.contact_id = Contacts.id GROUP BY Contacts.id ORDER BY distance ASC;");
+        String qry = "SELECT Contacts.*,MIN((CASE WHEN (Contacts.firstName IS NOT NULL AND Contacts.lastName IS NOT NULL) THEN EDITD((Contacts.firstName || ' ' || Contacts.lastName),'"+rterm+"') ELSE 2147483647 END),(CASE WHEN PhoneNumbers.phoneNumber IS NOT NULL THEN EDITD(CAST(PhoneNumbers.phoneNumber AS TEXT),'"+rterm+"') ELSE 2147483647 END),(CASE WHEN emails.email IS NOT NULL THEN EDITD(emails.email,'"+rterm+"') ELSE 2147483647 END)) AS distance FROM Contacts LEFT JOIN PhoneNumbers ON PhoneNumbers.contact_id = Contacts.id LEFT JOIN emails ON emails.contact_id = Contacts.id GROUP BY Contacts.id ORDER BY distance ASC,(Contacts.firstName || ' ' || Contacts.lastName) DESC;";
+        System.out.println(qry);
+        ResultSet rs = _statement.executeQuery(qry);
+        System.out.println("QRY EXECUTED");
         List<ContactBasic> contacts = new ArrayList();
         ContactBasic c;
         while (rs.next()) {

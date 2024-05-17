@@ -7,10 +7,15 @@ package com.ProGeeks.ContactsManager.GUI;
 import com.ProGeeks.ContactsManager.MainClass;
 import com.ProGeeks.ContactsManager.Model.Contact.Contact;
 import com.ProGeeks.ContactsManager.Model.Contact.ContactBasic;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 
 
@@ -28,18 +33,43 @@ public class MainContactsList extends javax.swing.JFrame {
     public MainContactsList() throws SQLException {
   
         initComponents();
-        List<ContactBasic> contacts = MainClass.manager.getContacts();
-        for(ContactBasic c : contacts) {
-            javax.swing.JTextArea t = new javax.swing.JTextArea();
-            String display = c.firstName + " " + c.lastName;
-            t.setText(display);
-            jTable1.add(t);
-            System.out.println("Added '" + display + "'");
-       }
-        initComponents();
+        refreshView();
         
     }
 
+    public List<Integer> viewMap;
+    
+    public void refreshView() throws SQLException {
+        viewMap = new ArrayList();
+        List<ContactBasic> contacts = MainClass.manager.getContacts();
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Name");
+        for(ContactBasic c : contacts) {
+            javax.swing.JTextArea t = new javax.swing.JTextArea();
+            String display = c.firstName + " " + c.lastName;
+            model.addRow(new Object[] {c.firstName + " " + c.lastName, c.jobTitle});
+            viewMap.add(c.id);
+            System.out.println("Added '" + display + "'");
+       }
+        
+        jTable1.setModel(model);
+    }
+    public void searchView(String term) throws SQLException {
+        System.out.println("SEARCHING FOR TERM : " + term);
+        List<ContactBasic> contacts = MainClass.manager.searchContact(term);
+        System.out.println("GOT " + contacts.size() + " RESULTS FROM TERM '" + term + "'");
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Name");
+        for(ContactBasic c : contacts) {
+            javax.swing.JTextArea t = new javax.swing.JTextArea();
+            String display = c.firstName + " " + c.lastName;
+            model.addRow(new Object[] {c.firstName + " " + c.lastName, c.jobTitle});
+            System.out.println("Added '" + display + "'");
+       }
+        
+        jTable1.setModel(model);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -58,6 +88,8 @@ public class MainContactsList extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         addContact1.setBackground(new java.awt.Color(0, 204, 255));
         addContact1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -209,6 +241,46 @@ public class MainContactsList extends javax.swing.JFrame {
 
     private void addContact1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addContact1ActionPerformed
       AddContact addcon =new AddContact();
+      addcon.addWindowListener(new WindowListener() {
+          @Override
+          public void windowOpened(WindowEvent e) {
+              
+          }
+
+          @Override
+          public void windowClosing(WindowEvent e) {
+          
+          }
+
+          @Override
+          public void windowClosed(WindowEvent e) {
+              try {
+                  refreshView();
+              } catch (SQLException ex) {
+                  Logger.getLogger(MainContactsList.class.getName()).log(Level.SEVERE, null, ex);
+              }
+          }
+
+          @Override
+          public void windowIconified(WindowEvent e) {
+          
+          }
+
+          @Override
+          public void windowDeiconified(WindowEvent e) {
+          
+          }
+
+          @Override
+          public void windowActivated(WindowEvent e) {
+          
+          }
+
+          @Override
+          public void windowDeactivated(WindowEvent e) {
+          
+          }
+      });
       addcon.show();
         // TODO add your handling code here:
     }//GEN-LAST:event_addContact1ActionPerformed
@@ -226,11 +298,24 @@ public class MainContactsList extends javax.swing.JFrame {
     }//GEN-LAST:event_searchbar1ActionPerformed
 
     private void printContacts1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printContacts1ActionPerformed
-
+        try {
+            refreshView();
 // TODO add your handling code here:
+        } catch (SQLException ex) {
+            Logger.getLogger(MainContactsList.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_printContacts1ActionPerformed
 
     private void searchbar1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchbar1KeyReleased
+        try {
+        if(searchbar1.getText().trim() == "")
+            refreshView();
+        else
+            searchView(searchbar1.getText().trim());
+        }catch(Exception ex)
+        {
+            System.out.println(ex);
+        }
 // Event > key released
 //Contact ob = new Contact();
 //TableRowSorter<Contact> obj=new TableRowSorter<>(ob);
@@ -253,11 +338,23 @@ public class MainContactsList extends javax.swing.JFrame {
     }//GEN-LAST:event_searchbar1KeyTyped
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+
+        System.exit(0);
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
+        try {
+            for(int i : jTable1.getSelectedRows())
+                MainClass.manager.deleteContact(viewMap.get(i));
+        } catch (SQLException ex) {
+            Logger.getLogger(MainContactsList.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            refreshView();
+        } catch (SQLException ex) {
+            Logger.getLogger(MainContactsList.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
