@@ -59,8 +59,11 @@ public class MainContactsList extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
 
+        setBackground(new java.awt.Color(255, 255, 255));
+
         addContact1.setBackground(new java.awt.Color(0, 204, 255));
         addContact1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        addContact1.setForeground(new java.awt.Color(255, 255, 255));
         addContact1.setText("Add Contact");
         addContact1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -92,10 +95,12 @@ public class MainContactsList extends javax.swing.JFrame {
             }
         });
 
+        searchLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         searchLabel1.setText("Search");
 
-        printContacts1.setBackground(new java.awt.Color(200, 200, 200));
+        printContacts1.setBackground(new java.awt.Color(102, 102, 102));
         printContacts1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        printContacts1.setForeground(new java.awt.Color(255, 255, 255));
         printContacts1.setText("Print All Contacts");
         printContacts1.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         printContacts1.addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -147,10 +152,12 @@ public class MainContactsList extends javax.swing.JFrame {
 
         jButton2.setBackground(new java.awt.Color(51, 255, 51));
         jButton2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jButton2.setForeground(new java.awt.Color(255, 255, 255));
         jButton2.setText("Update");
 
         jButton3.setBackground(new java.awt.Color(255, 0, 0));
         jButton3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jButton3.setForeground(new java.awt.Color(255, 255, 255));
         jButton3.setText("Delete");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
