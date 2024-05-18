@@ -8,7 +8,7 @@ import com.ProGeeks.ContactsManager.Model.PhoneNumber.PhoneNumber;
 
 
 
-public class Contact extends ContactBasic{
+public class Contact extends ContactBasic {
 	public List<Email> emails;
 	public List<PhoneNumber> phoneNumbers;
 	public Contact() {

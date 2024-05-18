@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public class PhoneNumber {
 	private long _number;
-	private static Pattern phoneNumberPattern = Pattern.compile("^+?([0-9]{0,15})$");
+	private static Pattern phoneNumberPattern = Pattern.compile("^+?([0-9]{0,13})$");// Pattern.compile("^+?([0-9]{0,15})$");
 	public PhoneNumber(long number) throws InvalidPhoneNumberException {
 	    this.set(number);
 	}
@@ -38,7 +38,7 @@ public class PhoneNumber {
 	    return matcher.matches();
 	}
 	public static boolean isPhoneNumberValid(long number) {
-		return number <= 999999999999999l;
+		return number <= 9999999999999l;
 	}
 	public static PhoneNumber FromLong(long number) throws InvalidPhoneNumberException 
 	{

@@ -7,6 +7,8 @@ package com.ProGeeks.ContactsManager.GUI;
 import com.ProGeeks.ContactsManager.MainClass;
 import com.ProGeeks.ContactsManager.Model.Contact.Contact;
 import com.ProGeeks.ContactsManager.Model.Contact.ContactBasic;
+import com.ProGeeks.ContactsManager.Model.Email.InvalidEmailAddressException;
+import com.ProGeeks.ContactsManager.Model.PhoneNumber.InvalidPhoneNumberException;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.sql.SQLException;
@@ -55,6 +57,7 @@ public class MainContactsList extends javax.swing.JFrame {
         jTable1.setModel(model);
     }
     public void searchView(String term) throws SQLException {
+        viewMap = new ArrayList();
         System.out.println("SEARCHING FOR TERM : " + term);
         List<ContactBasic> contacts = MainClass.manager.searchContact(term);
         System.out.println("GOT " + contacts.size() + " RESULTS FROM TERM '" + term + "'");
@@ -64,6 +67,7 @@ public class MainContactsList extends javax.swing.JFrame {
             javax.swing.JTextArea t = new javax.swing.JTextArea();
             String display = c.firstName + " " + c.lastName;
             model.addRow(new Object[] {c.firstName + " " + c.lastName, c.jobTitle});
+            viewMap.add(c.id);
             System.out.println("Added '" + display + "'");
        }
         
@@ -185,7 +189,12 @@ public class MainContactsList extends javax.swing.JFrame {
         jButton2.setBackground(new java.awt.Color(51, 255, 51));
         jButton2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("Update");
+        jButton2.setText("Edit");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setBackground(new java.awt.Color(255, 0, 0));
         jButton3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -201,6 +210,11 @@ public class MainContactsList extends javax.swing.JFrame {
         jButton4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton4.setForeground(new java.awt.Color(255, 255, 255));
         jButton4.setText("Details");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -250,7 +264,10 @@ public class MainContactsList extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void addContact1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addContact1ActionPerformed
-      AddContact addcon =new AddContact();
+      AddContactFrame addcon;
+        try {
+            addcon = new AddContactFrame();
+            
       addcon.addWindowListener(new WindowListener() {
           @Override
           public void windowOpened(WindowEvent e) {
@@ -292,6 +309,13 @@ public class MainContactsList extends javax.swing.JFrame {
           }
       });
       addcon.show();
+        } catch (SQLException ex) {
+            Logger.getLogger(MainContactsList.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidEmailAddressException ex) {
+            Logger.getLogger(MainContactsList.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidPhoneNumberException ex) {
+            Logger.getLogger(MainContactsList.class.getName()).log(Level.SEVERE, null, ex);
+        }
         // TODO add your handling code here:
     }//GEN-LAST:event_addContact1ActionPerformed
 
@@ -367,6 +391,33 @@ public class MainContactsList extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+
+        try {
+            new ContactDetailsFrame(MainClass.manager.getContactDetails(viewMap.get(jTable1.getSelectedRow()))).show();
+            // TODO add your handling code here:
+        } catch (SQLException ex) {
+            Logger.getLogger(MainContactsList.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidEmailAddressException ex) {
+            Logger.getLogger(MainContactsList.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidPhoneNumberException ex) {
+            Logger.getLogger(MainContactsList.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        
+        try {
+            new ContactDetailsEditFrame(MainClass.manager.getContactDetails(viewMap.get(jTable1.getSelectedRow())).id).show();
+        } catch (SQLException ex) {
+            Logger.getLogger(MainContactsList.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidEmailAddressException ex) {
+            Logger.getLogger(MainContactsList.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidPhoneNumberException ex) {
+            Logger.getLogger(MainContactsList.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -384,13 +435,13 @@ public class MainContactsList extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AddContact.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AddContactFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AddContact.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AddContactFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AddContact.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AddContactFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AddContact.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AddContactFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 

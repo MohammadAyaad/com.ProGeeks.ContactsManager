@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 /**
  *
- * @author Hady Elkatatny
+ * @author Mohammad Ayaad
  */
 public class LevenshteinDistance {
     public static int ComputeDistance(String str0, String str1) {

@@ -82,6 +82,7 @@ public class ContactsManager {
         }
         String[] numbers = rs.getString("numbers").split(",");
         for(int i = 0;i < numbers.length;i++) {
+            System.out.println("PARSING NUMBER : " + numbers[i]);
             PhoneNumber n = PhoneNumber.FromString(numbers[i]);
             c.phoneNumbers.add(n);
         }
@@ -208,25 +209,4 @@ public class ContactsManager {
             return false;
         }
     }
-
-    /*
-	 create LS-CRUD+S
-	 L-CRUD+S :
-	 Create Contacts n
-	 Read Contacts y
-	 Update Contacts n
-	 Delete Contacts y
-	 Search Contacts y
-	 
-	 S-CRUD+S :
-	 Create Contact y
-	 Read Contact y
-	 Update Contact y
-	 Delete Contact y
-	 Search Contact n
-
-	Other :
-	Search Contacts By Number y
-	Search Contacts By Name y
-     */
 }

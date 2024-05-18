@@ -21,25 +21,21 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Hady Elkatatny
  */
-public class ContactDetailsEditFrame extends javax.swing.JFrame {
+public class AddContactFrame extends javax.swing.JFrame {
 
     /**
      * Creates new form ContactDetailsFrame
      */
-    int contactId = 0;
     Contact c;
     DefaultTableModel phoneNumbersModel;
     DefaultTableModel emailsModel;
-    public ContactDetailsEditFrame(int contact_id) throws SQLException, InvalidEmailAddressException, InvalidPhoneNumberException {
-        contactId = contact_id;
-        try {
-            c = MainClass.manager.getContactDetails(contact_id);
-        }catch(Exception ex) {
-            System.out.println(ex);
-        }
+    public AddContactFrame() throws SQLException, InvalidEmailAddressException, InvalidPhoneNumberException {
+        
         initComponents();
+        c = new Contact();
         init();
-        updateUI();
+        PhoneNumbersTable.setModel(phoneNumbersModel);
+        EmailsTable.setModel(emailsModel);
     }
     void updateUI() {
         firstNameTF.setText(c.firstName);
@@ -111,10 +107,10 @@ public class ContactDetailsEditFrame extends javax.swing.JFrame {
             }
         });
 
-        SaveBtn.setBackground(new java.awt.Color(51, 255, 51));
+        SaveBtn.setBackground(new java.awt.Color(0, 153, 255));
         SaveBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         SaveBtn.setForeground(new java.awt.Color(255, 255, 255));
-        SaveBtn.setText("Save");
+        SaveBtn.setText("Add");
         SaveBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 SaveBtnActionPerformed(evt);
@@ -149,7 +145,7 @@ public class ContactDetailsEditFrame extends javax.swing.JFrame {
 
         firstNameTF.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         firstNameTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        firstNameTF.setText("name");
+        firstNameTF.setText("first");
         firstNameTF.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 firstNameTFActionPerformed(evt);
@@ -206,7 +202,7 @@ public class ContactDetailsEditFrame extends javax.swing.JFrame {
 
         JobTF.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         JobTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        JobTF.setText("name");
+        JobTF.setText("job title");
         JobTF.setMaximumSize(new java.awt.Dimension(18, 16));
         JobTF.setMinimumSize(new java.awt.Dimension(18, 16));
         JobTF.setPreferredSize(new java.awt.Dimension(18, 16));
@@ -223,7 +219,7 @@ public class ContactDetailsEditFrame extends javax.swing.JFrame {
 
         lastNameTF.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         lastNameTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        lastNameTF.setText("name");
+        lastNameTF.setText("last");
         lastNameTF.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 lastNameTFActionPerformed(evt);
@@ -309,10 +305,10 @@ public class ContactDetailsEditFrame extends javax.swing.JFrame {
 
     private void SaveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveBtnActionPerformed
         try {
-            MainClass.manager.updateContactDetails(c);
+            MainClass.manager.addContact(c);
             
         } catch (SQLException ex) {
-            Logger.getLogger(ContactDetailsEditFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AddContactFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.dispose();
     }//GEN-LAST:event_SaveBtnActionPerformed
@@ -322,9 +318,10 @@ public class ContactDetailsEditFrame extends javax.swing.JFrame {
             PhoneNumber p = new PhoneNumber("20" + PhoneNumberTF.getText());
             c.phoneNumbers.add(p);
             phoneNumbersModel.addRow(new Object[] { p.toString() });
+            PhoneNumberTF.setText("");
             // TODO add your handling code here:
         } catch (InvalidPhoneNumberException ex) {
-            Logger.getLogger(ContactDetailsEditFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AddContactFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_PhoneNumberAddActionPerformed
 
@@ -347,10 +344,12 @@ public class ContactDetailsEditFrame extends javax.swing.JFrame {
             Email e = new Email(EmailTF.getText());
             c.emails.add(e);
             emailsModel.addRow(new Object[] { e.toString() });
+            EmailTF.setText("");
             // TODO add your handling code here:
         }catch (InvalidEmailAddressException ex) {
-            Logger.getLogger(ContactDetailsEditFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AddContactFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
+        // TODO add your handling code here:
         // TODO add your handling code here:
     }//GEN-LAST:event_EmailAddActionPerformed
 
